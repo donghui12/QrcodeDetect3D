@@ -6,7 +6,7 @@ import time
 from QrcodeDetect3D import QRCode
 
 # # Length of pattern in realily
-QRCodeSide = 8.8
+QRCodeSide = 8.8  # 12
 # Pixel length of pattern in image
 PatternSide = 250
 
@@ -20,20 +20,15 @@ class QRCodeDetector(object):
         width = 1920
         height = 1080
         self.cam = cv2.VideoCapture(self.cam_no)
-        self.cam.set(3, width)  # 设置帧宽
-        self.cam.set(4, height)  # 设置帧高
-
-        # Length of pattern in realily
-        QRCodeSide = 8.8
-        # Pixel length of pattern in image
-        PatternSide = 250
+        self.cam.set(3, width)
+        self.cam.set(4, height)
 
     def get_frame(self):
         img = cv2.flip(self.cam.read()[1], 1)
         return img
 
     @staticmethod
-    def camPoseEstimate(frame):
+    def cam_pose_estimate(frame):
         # OpenCV on Mac OSX has some issue on image size swapping while reading
         # Mac user might need this line to rotate the image by 90 degree clockwise
         # image = cv2.flip(cv2.transpose(frame), 1)
@@ -94,7 +89,7 @@ class QRCodeDetector(object):
         """
         location_point = [0, 0, 0]
         frame = self.get_frame()
-        camera_pose, camera_orientation = self.camPoseEstimate(frame)
+        camera_pose, camera_orientation = self.cam_pose_estimate(frame)
         if camera_pose is not None:
             location_point = [int(i) for i in camera_pose]
         return location_point
@@ -116,4 +111,5 @@ def test_QRCodeDetector():
             break
 
 
-test_QRCodeDetector()
+if __name__ == "__main__":
+    test_QRCodeDetector()
