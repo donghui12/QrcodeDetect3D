@@ -1,4 +1,5 @@
 import copy
+import math
 
 import cv2
 import numpy as np
@@ -26,6 +27,10 @@ class QRCodeDetector(object):
     def get_frame(self):
         img = cv2.flip(self.cam.read()[1], 1)
         return img
+
+    @staticmethod
+    def value_to_angle(value):
+        return math.asin(float(value))/2/math.pi*360
 
     @staticmethod
     def cam_pose_estimate(frame):
@@ -88,11 +93,13 @@ class QRCodeDetector(object):
         		None -
         """
         location_point = [0, 0, 0]
+        camera_orientation_angels = [0, 0, ]
         frame = self.get_frame()
-        camera_pose, camera_orientation = self.cam_pose_estimate(frame)
+        camera_pose, camera_orientation_values = self.cam_pose_estimate(frame)
         if camera_pose is not None:
             location_point = [int(i) for i in camera_pose]
-        return location_point
+            camera_orientation_angels = [self.value_to_angle(value) for value in camera_orientation_values]
+        return location_point, camera_orientation_angels
 
 
 def test_QRCodeDetector():
